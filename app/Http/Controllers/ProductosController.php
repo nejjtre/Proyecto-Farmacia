@@ -1,38 +1,32 @@
 <?php
 namespace App\Http\Controllers;
-
 use App\Models\Productos;
-use App\Models\Categoria;
 use Illuminate\Http\Request;
 
 class ProductosController extends Controller
 {
-    public function index()
-    {
-        $productos = Productos::with('categoria')->orderBy('nombre')->paginate(10);
-        
-        return view('productos.index', compact('productos'));
+   public function index(Request $request)
+{
+    $query = Productos::query();
+    
+    if ($request->has('categoria')) {
+        $query->where('categoria', $request->categoria);
     }
-
-    public function create()
-    {
-        $categorias = Categoria::all();
-        return view('productos.create', compact('categorias'));
-    }
-
+    
+    $productos = $query->paginate(10); // Cambia esto (número de items por página)
+    
+    $categorias = Productos::select('categoria')->distinct()->pluck('categoria');
+    
+    return view('productos.index', compact('productos', 'categorias'));
+}  
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nombre' => 'required|max:100',
             'descripcion' => 'nullable',
-            'principio_activo' => 'required|max:100',
-            'laboratorio' => 'required|max:100',
-            'codigo_barras' => 'required|unique:productos',
+            'categoria' => 'nullable',
             'precio' => 'required|numeric|min:0',
-            'cantidad_stock' => 'required|integer|min:0',
-            'requiere_receta' => 'boolean',
-            'fecha_vencimiento' => 'required|date',
-            'categoria_id' => 'required|exists:categorias,id'
+            'cantidad' => 'required|integer|min:0'
         ]);
 
         Productos::create($validated);
@@ -44,26 +38,15 @@ class ProductosController extends Controller
     {
         return view('productos.show', compact('producto'));
     }
-
-    public function edit(Productos $producto)
-    {
-        $categorias = Categoria::all();
-        return view('productos.edit', compact('producto', 'categorias'));
-    }
-
     public function update(Request $request, Productos $producto)
     {
         $validated = $request->validate([
+            'id' => 'required|exists:productos,id',
             'nombre' => 'required|max:100',
             'descripcion' => 'nullable',
-            'principio_activo' => 'required|max:100',
-            'laboratorio' => 'required|max:100',
-            'codigo_barras' => 'required|unique:productos,codigo_barras,'.$producto->id,
+            'categoria' => 'nullable',
             'precio' => 'required|numeric|min:0',
-            'cantidad_stock' => 'required|integer|min:0',
-            'requiere_receta' => 'boolean',
-            'fecha_vencimiento' => 'required|date',
-            'categoria_id' => 'required|exists:categorias,id'
+            'cantidad' => 'required|integer|min:0'
         ]);
 
         $producto->update($validated);

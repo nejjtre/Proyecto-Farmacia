@@ -19,23 +19,24 @@
         <table class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
-                    <th>Código</th>
+                    <th>Id</th>
                     <th>Nombre</th>
-                    <th>Principio Activo</th>
+                    <th>Descripción</th>
+                    <th>Categoria</th>
                     <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Acciones</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($productos as $producto)
                 <tr>
-                    <td>{{ $producto->codigo_barras }}</td>
+                    <td>{{ $producto->id }}</td>
                     <td>{{ $producto->nombre }}</td>
-                    <td>{{ $producto->principio_activo }}</td>
+                    <td>{{ $producto->descripcion }}</td>
+                    <td>{{ $producto->categoria}}</td>
                     <td>${{ number_format($producto->precio, 2) }}</td>
-                    <td class="{{ $producto->cantidad_stock < 10 ? 'text-danger fw-bold' : '' }}">
-                        {{ $producto->cantidad_stock }}
+                    <td>{{ $producto->cantidad}}
                     </td>
                     <td>
                         <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm btn-info">

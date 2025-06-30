@@ -13,20 +13,12 @@ class Productos extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
-        'principio_activo',
-        'laboratorio',
-        'codigo_barras',
+        'categoria',
         'precio',
-        'cantidad_stock',
-        'requiere_receta',
-        'fecha_vencimiento',
-        'categoria_id'
+        'cantidad'
     ];
-
     protected $casts = [
-        'precio' => 'decimal:2',
-        'requiere_receta' => 'boolean',
-        'fecha_vencimiento' => 'date'
+        'precio' => 'decimal:2'
     ];
 
     // Relación con opiniones (si aplica)
@@ -34,6 +26,7 @@ class Productos extends Model
     {
         return $this->hasMany(Opinion::class);
     }
+    
 
     // Método para verificar disponibilidad
     public function enStock(): bool
