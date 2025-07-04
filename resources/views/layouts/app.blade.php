@@ -75,12 +75,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ route('nosotros') }}">
                             <i class="fas fa-info-circle"></i> Sobre Nosotros
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ route('contacto.index') }}">
                             <i class="fas fa-phone-alt"></i> Contacto
                         </a>
                     </li>
@@ -88,7 +88,7 @@
                 <ul class="navbar-nav">
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('micuenta.index') }}">
                                 <i class="fas fa-user"></i> Mi Cuenta
                             </a>
                         </li>

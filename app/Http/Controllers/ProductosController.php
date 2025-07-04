@@ -8,41 +8,51 @@ use Kyslik\ColumnSortable\Sortable;
 class ProductosController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Productos::query();
-        
-        // Filtro por nombre
-        if ($request->has('nombre') && !empty($request->nombre)) {
-            $query->where('nombre', 'like', '%' . $request->nombre . '%');
-        }
-        
-        // Filtro por categoría
-        if ($request->has('categoria') && !empty($request->categoria)) {
-            $query->where('categoria', $request->categoria);
-        }
-        
-        // Filtro por precio mínimo
-        if ($request->has('precio_min') && !empty($request->precio_min)) {
-            $query->where('precio', '>=', $request->precio_min);
-        }
-        
-        // Filtro por precio máximo
-        if ($request->has('precio_max') && !empty($request->precio_max)) {
-            $query->where('precio', '<=', $request->precio_max);
-        }
-        
-        // Obtener categorías únicas para el dropdown
-        $categorias = Productos::select('categoria')->distinct()->pluck('categoria');
-        
-        // Paginación con 10 items por página y conservar los parámetros de búsqueda
-        $productos = $query->sortable()->paginate(40)->appends($request->except('page'));
-        
-        return view('productos.index', compact('productos', 'categorias'));
+{
+    $query = Productos::query();
+    
+    // Aplicar filtros
+    if ($request->filled('nombre')) {
+        $query->where('nombre', 'like', '%'.$request->nombre.'%');
     }
+    
+    if ($request->filled('categoria')) {
+        $query->where('categoria', $request->categoria);
+    }
+    
+    if ($request->filled('precio_min')) {
+        $query->where('precio', '>=', $request->precio_min);
+    }
+    
+    if ($request->filled('precio_max')) {
+        $query->where('precio', '<=', $request->precio_max);
+    }
+    
+    // Ordenamiento
+    if ($request->has('sort') && $request->has('direction')) {
+        $query->orderBy($request->sort, $request->direction);
+    } else {
+        $query->orderBy('id', 'asc'); // Orden por defecto
+    }
+    
+    // Obtener categorías para el dropdown
+    $categorias = Productos::select('categoria')
+                        ->distinct()
+                        ->orderBy('categoria')
+                        ->pluck('categoria');
+    
+    // Paginación con conservación de todos los parámetros GET
+    $productos = $query->paginate(40)->withQueryString();
+    
+    return view('productos.index', compact('productos', 'categorias'));
+}
 
     public function create()
     {
-        $categorias = Productos::select('categoria')->distinct()->pluck('categoria');
+        $categorias = Productos::select('categoria')
+                            ->distinct()
+                            ->orderBy('categoria')
+                            ->pluck('categoria');
         return view('productos.create', compact('categorias'));
     }
 
@@ -68,7 +78,10 @@ class ProductosController extends Controller
 
     public function edit(Productos $producto)
     {
-        $categorias = Productos::select('categoria')->distinct()->pluck('categoria');
+        $categorias = Productos::select('categoria')
+                            ->distinct()
+                            ->orderBy('categoria')
+                            ->pluck('categoria');
         return view('productos.edit', compact('producto', 'categorias'));
     }
 
